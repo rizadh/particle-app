@@ -1,15 +1,17 @@
 // Options
 const maxBalls = parseInt(prompt("How many balls can ya handle?")) || 10;
 const ballSize = parseInt(prompt("How big should they be? (pixels)")) || 5;
-const maxSpeed = parseFloat(prompt("How fast do you want 'em? (pixels/second)")) || 100;
+const maxSpeed = parseFloat(prompt("How fast do you want 'em? (pixels per second)")) || 100;
 const maxAccel = parseFloat(prompt(
-    "How much energy do you want to give 'em? (pixels^s/second)\n\nI recommend " + (maxSpeed / 2)
+    "How much energy do you want to give 'em? (p^s/second)\n\n" +
+    "I recommend " + (maxSpeed / 2)
 )) || 50;
 const areaRestrictFactor = parseFloat(prompt(
-    `How much of the screen should they cover?
-     0 = only right in the middle (boring)
-     1 = the entire screen (fun!)
-     `)) || 1;
+    "How much of the screen should they cover?\n\n" +
+    "0 = only right in the middle (boring)" +
+    "0.5 = half the screen (interesting)" +
+    "1 = the entire screen (fun)"
+)) || 1;
 
 const gravity = confirm("Do you like gravity?");
 alert("Warning you now, this app will break spectacularly if you close it down for a while and come back. Don't complain :)")
