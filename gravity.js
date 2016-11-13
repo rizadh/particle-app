@@ -113,10 +113,14 @@ window.onload = function () {
 window.onresize = setBounds
 
 function setBounds() {
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    let xMargin = width * (1 - areaRestrictFactor) / 2
-    let yMargin = height * (1 - areaRestrictFactor) / 2
+    let [width, height] = [
+        window.innerWidth,
+        window.innerHeight
+    ];
+    let [xMargin, yMargin] = [
+        width * (1 - areaRestrictFactor) / 2,
+        height * (1 - areaRestrictFactor) / 2
+    ];
     window.bounds = [
         [xMargin, width - xMargin],
         [yMargin, height - yMargin]
