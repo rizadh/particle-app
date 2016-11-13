@@ -67,16 +67,6 @@ class Particle {
     }
 }
 
-Particle.generateRandom = function () {
-    return new Particle(
-        [getRandom(bounds[0][0], bounds[0][1]), getRandom(bounds[1][0], bounds[1][1])],
-        [getRandom(-maxSpeed, maxSpeed), getRandom(-maxSpeed, maxSpeed)],
-        acceleration(),
-        restitution(),
-        ballSize
-    );
-}
-
 class Ball {
     constructor(ballElement, particleModel) {
         this.ballElement = ballElement;
@@ -104,7 +94,13 @@ window.onload = function () {
         ball.style.height = `${ballSize * 2}px`
         ball.style.margin = `-${ballSize}px`
         document.body.appendChild(ball)
-        balls[i] = new Ball(ball, Particle.generateRandom())
+        balls[i] = new Ball(ball, new Particle(
+            [getRandom(bounds[0][0], bounds[0][1]), getRandom(bounds[1][0], bounds[1][1])],
+            [getRandom(-maxSpeed, maxSpeed), getRandom(-maxSpeed, maxSpeed)],
+            acceleration(),
+            restitution(),
+            ballSize
+        ))
     }
 
     window.requestAnimationFrame(updateAll);
