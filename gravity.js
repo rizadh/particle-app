@@ -5,13 +5,13 @@ const maxSpeed = parseFloat(prompt("How fast do you want 'em? (px/s)")) || 100;
 const maxAccel = parseFloat(prompt(
     "How much energy do you want to give 'em? (px/s\u00B2)\n\n" +
     `I recommend ${maxSpeed / 2}`
-)) || 50;
-const areaRestrictFactor = parseFloat(prompt(
+)) || maxSpeed / 2;
+const areaRestrictFactor = Math.min(Math.max(parseFloat(prompt(
     "How much of the screen should they cover?\n\n" +
     "0 = only right in the middle (boring)\n" +
     "0.5 = half the screen (interesting)\n" +
     "1 = the entire screen (fun)"
-)) || 1;
+)), 0), 1) || 1;
 
 const gravity = !confirm("Disable gravity?");
 
