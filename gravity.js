@@ -107,7 +107,7 @@ window.onload = function () {
         balls[i] = new Ball(ball, Particle.generateRandom())
     }
 
-    updateAll()
+    window.requestAnimationFrame(updateAll);
 }
 
 window.onresize = setBounds
@@ -124,10 +124,8 @@ function setBounds() {
 }
 
 function updateAll() {
-    window.requestAnimationFrame(function () {
-        balls.forEach(function (ball) {
-            ball.update()
-        })
-        updateAll();
+    balls.forEach(function (ball) {
+        ball.update();
     });
+    window.requestAnimationFrame(updateAll);
 }
