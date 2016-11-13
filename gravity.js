@@ -67,15 +67,27 @@ class Particle {
     }
 }
 
-class Ball {
+class DivStage {
     constructor(ballElement, particleModel) {
-        this.ballElement = ballElement;
-        this.particleModel = particleModel;
+        this.particles = [];
+        this.stage = document.body
     }
 
-    update() {
-        let [x, y] = this.particleModel.getPosition()
-        this.ballElement.style.WebkitTransform = `translate(${x}px, ${y}px)`
+    addParticle(particle) {
+        let particleNode = document.createElement('div')
+        particleNode.className = 'ball'
+        particleNode.style.width = `${ballSize * 2}px`
+        particleNode.style.height = `${ballSize * 2}px`
+        particleNode.style.margin = `-${ballSize}px`
+        this.stage.appendChild(particleNode) &&
+            this.particles.push([particleNode, particle]);
+    }
+
+    render() {
+        this.particles.forEach(function ([particleNode, particle]) {
+            let [x, y] = particle.getPosition()
+            particleNode.style.WebkitTransform = `translate(${x}px, ${y}px)`
+        })
     }
 }
 
@@ -86,14 +98,9 @@ function getRandom(lowerBound, upperBound) {
 let balls = [];
 
 window.onload = function () {
+    window.stage = new DivStage();
     for (let i = 0; i < maxBalls; i++) {
-        let ball = document.createElement('div')
-        ball.className = 'ball'
-        ball.style.width = `${ballSize * 2}px`
-        ball.style.height = `${ballSize * 2}px`
-        ball.style.margin = `-${ballSize}px`
-        document.body.appendChild(ball)
-        balls[i] = new Ball(ball, new Particle(
+        stage.addParticle(new Particle(
             [getRandom(bounds[0][0], bounds[0][1]), getRandom(bounds[1][0], bounds[1][1])],
             [getRandom(-maxSpeed, maxSpeed), getRandom(-maxSpeed, maxSpeed)],
             acceleration(),
@@ -102,7 +109,12 @@ window.onload = function () {
         ))
     }
 
-    window.requestAnimationFrame(updateAll);
+    let animate = function () {
+        stage.render()
+        window.requestAnimationFrame(animate)
+    }
+
+    window.requestAnimationFrame(animate);
 }
 
 window.onresize = setBounds
@@ -120,11 +132,4 @@ function setBounds() {
         [xMargin, width - xMargin],
         [yMargin, height - yMargin]
     ]
-}
-
-function updateAll() {
-    balls.forEach(function (ball) {
-        ball.update();
-    });
-    window.requestAnimationFrame(updateAll);
 }
