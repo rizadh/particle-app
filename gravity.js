@@ -101,8 +101,8 @@ window.onload = function () {
     for (let i = 0; i < maxBalls; i++) {
         let ball = document.createElement('div')
         ball.className = 'ball'
-        ball.style.width = `${ballSize*2}px`
-        ball.style.height = `${ballSize*2}px`
+        ball.style.width = `${ballSize * 2}px`
+        ball.style.height = `${ballSize * 2}px`
         ball.style.margin = `-${ballSize}px`
         document.body.appendChild(ball)
         balls[i] = new Ball(ball, Particle.generateRandom())
@@ -119,8 +119,8 @@ function setBounds() {
     let xMargin = width * (1 - areaRestrictFactor) / 2
     let yMargin = height * (1 - areaRestrictFactor) / 2
     window.bounds = [
-        [0 + xMargin, width - xMargin],
-        [0 + yMargin, height - yMargin]
+        [xMargin, width - xMargin],
+        [yMargin, height - yMargin]
     ]
 }
 
