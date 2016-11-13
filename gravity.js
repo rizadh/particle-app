@@ -84,7 +84,6 @@ function getRandom(lowerBound, upperBound) {
 }
 
 let balls = [];
-let p = new Particle([0, 0], [5, 0], [0, 9.8]);
 
 window.onload = function () {
     for (let i = 0; i < maxBalls; i++) {
