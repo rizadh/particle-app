@@ -89,14 +89,44 @@ class DivStage {
     }
 }
 
+class CanvasStage {
+    constructor() {
+        this.particles = [];
+        this.stage = document.createElement('canvas');
+        this.ctx = this.stage.getContext('2d');
+        this.ctx.scale(5, 5);
+        document.body.appendChild(this.stage);
+    }
+
+    addParticle(particle) {
+        this.particles.push(particle);
+    }
+
+    render() {
+        this.stage.width = window.innerWidth * 2;
+        this.stage.height = window.innerHeight * 2;
+        this.ctx.clearRect(0, 0, this.stage.width, this.stage.height);
+        this.ctx.scale(2, 2);
+        this.particles.forEach(function(particle) {
+            let [x, y] = particle.getPosition();
+            this.ctx.moveTo(x + particle.radius, y);
+            this.ctx.beginPath();
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            this.ctx.arc(x, y, particle.radius, 0, 2 * Math.PI, false);
+            this.ctx.fill();
+        }, this)
+    }
+}
+
 function getRandom(lowerBound, upperBound) {
     return lowerBound + Math.random() * (upperBound - lowerBound)
 }
 
 let balls = [];
 
-window.onload = function () {
-    window.stage = new DivStage();
+window.onload = function() {
+    // window.stage = new DivStage();
+    window.stage = new CanvasStage();
     for (let i = 0; i < maxBalls; i++) {
         stage.addParticle(new Particle(
             [getRandom(bounds[0][0], bounds[0][1]), getRandom(bounds[1][0], bounds[1][1])],
