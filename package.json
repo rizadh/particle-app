@@ -11,7 +11,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "compile": "babel gravity.js --presets=es2015 | uglifyjs > gravity.min.js",
+    "compile": "babel particle.js --presets=es2015 | uglifyjs > particle.min.js",
     "serve": "http-server",
     "start": "npm run compile && npm run serve"
   },

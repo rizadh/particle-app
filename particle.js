@@ -15,27 +15,28 @@ const areaRestrictFactor = Math.min(Math.max(parseFloat(prompt(
 
 const gravity = !confirm("Disable gravity?");
 
+var bounds = [Infinity, Infinity];
+
 // Physics functions
 const restitution = () => gravity ? getRandom(0.5, 0.9) : 1;
 const acceleration = () => gravity ? [0, 98] : [getRandom(-maxAccel, maxAccel), getRandom(-maxAccel, maxAccel)];
 
-setBounds()
-
 class Particle {
-    constructor(position = [0, 0], velocity = [0, 0], acceleration = [0, 0], restitution = 1, radius = 0) {
+    constructor(position = [0, 0], velocity = [0, 0], acceleration = [0, 0], restitution = 1, radius = 0, bounds = [Infinity, Infinity]) {
         this.position = position;
         this.velocity = velocity;
         this.acceleration = acceleration;
         this.restitution = restitution;
         this.radius = radius;
+        this.bounds = bounds;
         this.lastUpdate = new Date().getTime();
     }
 
-    checkBounds(bounds) {
+    checkBounds() {
         for (let axis = 0; axis < 2; axis++)
             for (let extreme = 0; extreme < 2; extreme++)
-                if ((extreme ? -this.position[axis] : this.position[axis]) - this.radius < (extreme ? -bounds[axis][extreme] : bounds[axis][extreme])) {
-                    this.position[axis] = bounds[axis][extreme] + (extreme ? -this.radius : this.radius);
+                if ((extreme ? -this.position[axis] : this.position[axis]) - this.radius < (extreme ? -this.bounds[axis][extreme] : this.bounds[axis][extreme])) {
+                    this.position[axis] = this.bounds[axis][extreme] + (extreme ? -this.radius : this.radius);
                     this.velocity[axis] = -this.velocity[axis] * this.restitution;
                     this.acceleration = acceleration()
                 }
@@ -56,12 +57,16 @@ class Particle {
             this.velocity[1] + dt * this.acceleration[1]
         ];
 
-        this.checkBounds(bounds)
+        this.checkBounds()
     }
 
     getPosition() {
         this.render();
         return this.position;
+    }
+
+    setBounds(x, y) {
+        this.bounds = [x, y];
     }
 }
 
@@ -122,9 +127,8 @@ function getRandom(lowerBound, upperBound) {
     return lowerBound + Math.random() * (upperBound - lowerBound)
 }
 
-let balls = [];
-
 window.onload = function() {
+    setBounds();
     // window.stage = new DivStage();
     window.stage = new CanvasStage();
     for (let i = 0; i < maxBalls; i++) {
@@ -133,13 +137,14 @@ window.onload = function() {
             [getRandom(-maxSpeed, maxSpeed), getRandom(-maxSpeed, maxSpeed)],
             acceleration(),
             restitution(),
-            ballSize
+            ballSize,
+            bounds
         ))
     }
 
     let animate = function() {
-        stage.render()
-        window.requestAnimationFrame(animate)
+        stage.render();
+        window.requestAnimationFrame(animate);
     }
 
     window.requestAnimationFrame(animate);
@@ -156,8 +161,7 @@ function setBounds() {
         width * (1 - areaRestrictFactor) / 2,
         height * (1 - areaRestrictFactor) / 2
     ];
-    window.bounds = [
-        [xMargin, width - xMargin],
-        [yMargin, height - yMargin]
-    ]
+
+    bounds[0] = [xMargin, width - xMargin];
+    bounds[1] = [yMargin, height - yMargin];
 }
