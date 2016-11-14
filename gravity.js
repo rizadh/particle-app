@@ -82,7 +82,7 @@ class DivStage {
     }
 
     render() {
-        this.particles.forEach(function ([particleNode, particle]) {
+        this.particles.forEach(function([particleNode, particle]) {
             let [x, y] = particle.getPosition()
             particleNode.style.WebkitTransform = `translate(${x}px, ${y}px)`
         })
@@ -137,7 +137,7 @@ window.onload = function() {
         ))
     }
 
-    let animate = function () {
+    let animate = function() {
         stage.render()
         window.requestAnimationFrame(animate)
     }
