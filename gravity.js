@@ -44,6 +44,8 @@ class Particle {
     render() {
         let currTime = new Date().getTime();
         let dt = (currTime - this.lastUpdate) / 1000;
+        if (dt > 0.5)
+            dt = 1 / 30;
         this.lastUpdate = currTime;
         this.position = [
             this.position[0] + dt * this.velocity[0],
