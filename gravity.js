@@ -66,7 +66,7 @@ class Particle {
 }
 
 class DivStage {
-    constructor(ballElement, particleModel) {
+    constructor() {
         this.particles = [];
         this.stage = document.body
     }
