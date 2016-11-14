@@ -16,12 +16,8 @@ const areaRestrictFactor = Math.min(Math.max(parseFloat(prompt(
 const gravity = !confirm("Disable gravity?");
 
 // Physics functions
-const restitution = function () {
-    return gravity ? getRandom(0.5, 0.9) : 1;
-}
-const acceleration = function () {
-    return gravity ? [0, 98] : [getRandom(-maxAccel, maxAccel), getRandom(-maxAccel, maxAccel)];
-}
+const restitution = () => gravity ? getRandom(0.5, 0.9) : 1;
+const acceleration = () => gravity ? [0, 98] : [getRandom(-maxAccel, maxAccel), getRandom(-maxAccel, maxAccel)];
 
 setBounds()
 
