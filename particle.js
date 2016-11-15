@@ -3,7 +3,7 @@ const maxBalls = parseInt(prompt("How many balls can ya handle?\n\nDefault: 100"
 const ballSize = parseInt(prompt("How big should they be? (px)\n\nDefault: 10")) || 10;
 const maxSpeed = parseFloat(prompt("How fast do you want 'em? (px/s)\n\nDefault: 100")) || 100;
 const maxAccel = parseFloat(prompt(
-    "How much energy do you want to give 'em? (px/s\u00B2)\n\n" +
+    "How much acceleration do you want to give 'em? (px/s\u00B2)\n\n" +
     "Default: " + parseInt(maxSpeed / 4)
 )) || maxSpeed / 4;
 const areaRestrictFactor = Math.min(Math.max(parseFloat(prompt(
