@@ -1,26 +1,31 @@
 // Options
-const maxBalls = parseInt(prompt("How many balls can ya handle?\n\nDefault: 100")) || 100;
-const ballSize = parseInt(prompt("How big should they be? (px)\n\nDefault: 10")) || 10;
-const maxSpeed = parseFloat(prompt("How fast do you want 'em? (px/s)\n\nDefault: 100")) || 100;
-const maxAccel = parseFloat(prompt(
-    "How much acceleration do you want to give 'em? (px/s\u00B2)\n\n" +
-    "Default: " + parseInt(maxSpeed / 4)
-)) || maxSpeed / 4;
-const areaRestrictFactor = Math.min(Math.max(parseFloat(prompt(
-    "How much of the screen should they cover?\n\n" +
-    "0 = only right in the middle (boring)\n" +
-    "0.5 = half the screen (interesting)\n" +
-    "1 = the entire screen (fun)\n\n" +
-    "Default: 1"
-)), 0), 1) || 1;
+const options = {
+    maxBalls: [parseInt(prompt("Number of balls?\n\n" +
+        "Default: 100")), 100],
+    ballSize: [parseInt(prompt("Size of balls? (radius in pixels)\n\n" +
+        "Default: 10")), 10],
+    maxSpeed: [parseFloat(prompt("Maximum initial speed? (px/s)\n\n" +
+        "Default: 100")), 100],
+    maxAccel: [parseFloat(prompt("Maximum acceleration? (px/s\u00B2)\n\n" +
+        "Default: 25")), 25],
+    areaRestrictFactor: [Math.min(Math.max(parseFloat(prompt(
+        "Size of simulation area (from 0 to 1)?\n\n" +
+        "Default: 1"
+    )), 0), 1), 1],
+    gravity: !confirm("Disable gravity?"),
+}
 
-const gravity = !confirm("Disable gravity?");
+for (let option in options)
+    if (options[option] instanceof Array)
+        options[option] = options[option][0] || (options[option][0] == 0) ? options[option][0] : options[option][1];
 
-var bounds = [Infinity, Infinity];
+let bounds = [Infinity, Infinity];
+
+console.log(options)
 
 // Physics functions
-const restitution = () => gravity ? getRandom(0.5, 0.9) : 1;
-const acceleration = () => gravity ? [0, 98] : [getRandom(-maxAccel, maxAccel), getRandom(-maxAccel, maxAccel)];
+const restitution = () => options.gravity ? getRandom(0.25, 0.75) : 1;
+const acceleration = () => options.gravity ? [0, 98] : [getRandom(-options.maxAccel, options.maxAccel), getRandom(-options.maxAccel, options.maxAccel)];
 
 class Particle {
     constructor(position = [0, 0], velocity = [0, 0], acceleration = [0, 0], restitution = 1, radius = 0, bounds = [Infinity, Infinity]) {
@@ -43,8 +48,8 @@ class Particle {
                 }
     }
 
-    render() {
-        let currTime = new Date().getTime();
+    getPosition() {
+        const currTime = new Date().getTime();
         let dt = (currTime - this.lastUpdate) / 1000;
         if (dt > 0.5)
             dt = 1 / 30;
@@ -59,10 +64,7 @@ class Particle {
         ];
 
         this.checkBounds()
-    }
 
-    getPosition() {
-        this.render();
         return this.position;
     }
 
@@ -80,15 +82,15 @@ class DivStage {
     addParticle(particle) {
         let particleNode = document.createElement('div')
         particleNode.className = 'ball'
-        particleNode.style.width = `${ballSize * 2}px`
-        particleNode.style.height = `${ballSize * 2}px`
-        particleNode.style.margin = `-${ballSize}px`
+        particleNode.style.width = `${options.ballSize * 2}px`
+        particleNode.style.height = `${options.ballSize * 2}px`
+        particleNode.style.margin = `-${options.ballSize}px`
         this.stage.appendChild(particleNode) &&
             this.particles.push([particleNode, particle]);
     }
 
     render() {
-        this.particles.forEach(function([particleNode, particle]) {
+        this.particles.forEach(([particleNode, particle]) => {
             let [x, y] = particle.getPosition()
             particleNode.style.WebkitTransform = `translate(${x}px, ${y}px)`
         })
@@ -109,11 +111,13 @@ class CanvasStage {
 
     render() {
         let ratio = getPixelRatio();
+        this.stage.style.width = window.innerWidth;
+        this.stage.style.height = window.innerHeight;
         this.stage.width = window.innerWidth * ratio;
         this.stage.height = window.innerHeight * ratio;
         this.ctx.clearRect(0, 0, this.stage.width, this.stage.height);
         this.ctx.scale(ratio, ratio);
-        this.particles.forEach(function(particle) {
+        this.particles.forEach(particle => {
             let [x, y] = particle.getPosition();
             this.ctx.moveTo(x + particle.radius, y);
             this.ctx.beginPath();
@@ -124,26 +128,22 @@ class CanvasStage {
     }
 }
 
-function getRandom(lowerBound, upperBound) {
-    return lowerBound + Math.random() * (upperBound - lowerBound)
-}
 
-window.onload = function() {
+window.onload = () => {
     setBounds();
     // window.stage = new DivStage();
     window.stage = new CanvasStage();
-    for (let i = 0; i < maxBalls; i++) {
+    for (let i = 0; i < options.maxBalls; i++)
         stage.addParticle(new Particle(
             [getRandom(bounds[0][0], bounds[0][1]), getRandom(bounds[1][0], bounds[1][1])],
-            [getRandom(-maxSpeed, maxSpeed), getRandom(-maxSpeed, maxSpeed)],
+            [getRandom(-options.maxSpeed, options.maxSpeed), getRandom(-options.maxSpeed, options.maxSpeed)],
             acceleration(),
             restitution(),
-            ballSize,
+            options.ballSize,
             bounds
         ))
-    }
 
-    let animate = function() {
+    let animate = () => {
         stage.render();
         window.requestAnimationFrame(animate);
     }
@@ -159,18 +159,14 @@ function setBounds() {
         window.innerHeight
     ];
     let [xMargin, yMargin] = [
-        width * (1 - areaRestrictFactor) / 2,
-        height * (1 - areaRestrictFactor) / 2
+        width * (1 - options.areaRestrictFactor) / 2,
+        height * (1 - options.areaRestrictFactor) / 2
     ];
 
     bounds[0] = [xMargin, width - xMargin];
     bounds[1] = [yMargin, height - yMargin];
 }
 
-function getPixelRatio() {
-    if ('devicePixelRatio' in window) {
-        return window.devicePixelRatio;
-    }
+function getPixelRatio() { return 'devicePixelRatio' in window ? window.devicePixelRatio : 1; }
 
-    return 1;
-}
+function getRandom(lowerBound, upperBound) { return lowerBound + Math.random() * (upperBound - lowerBound); }
