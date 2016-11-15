@@ -99,7 +99,6 @@ class CanvasStage {
         this.particles = [];
         this.stage = document.createElement('canvas');
         this.ctx = this.stage.getContext('2d');
-        this.ctx.scale(5, 5);
         document.body.appendChild(this.stage);
     }
 
@@ -108,10 +107,11 @@ class CanvasStage {
     }
 
     render() {
-        this.stage.width = window.innerWidth * 2;
-        this.stage.height = window.innerHeight * 2;
+        let ratio = getPixelRatio();
+        this.stage.width = window.innerWidth * ratio;
+        this.stage.height = window.innerHeight * ratio;
         this.ctx.clearRect(0, 0, this.stage.width, this.stage.height);
-        this.ctx.scale(2, 2);
+        this.ctx.scale(ratio, ratio);
         this.particles.forEach(function(particle) {
             let [x, y] = particle.getPosition();
             this.ctx.moveTo(x + particle.radius, y);
@@ -164,4 +164,12 @@ function setBounds() {
 
     bounds[0] = [xMargin, width - xMargin];
     bounds[1] = [yMargin, height - yMargin];
+}
+
+function getPixelRatio() {
+    if ('devicePixelRatio' in window) {
+        return window.devicePixelRatio;
+    }
+
+    return 1;
 }
