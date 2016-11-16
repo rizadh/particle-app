@@ -73,30 +73,6 @@ class Particle {
     }
 }
 
-class DivStage {
-    constructor() {
-        this.particles = [];
-        this.stage = document.body
-    }
-
-    addParticle(particle) {
-        let particleNode = document.createElement('div')
-        particleNode.className = 'ball'
-        particleNode.style.width = `${options.ballSize * 2}px`
-        particleNode.style.height = `${options.ballSize * 2}px`
-        particleNode.style.margin = `-${options.ballSize}px`
-        this.stage.appendChild(particleNode) &&
-            this.particles.push([particleNode, particle]);
-    }
-
-    render() {
-        this.particles.forEach(([particleNode, particle]) => {
-            let [x, y] = particle.getPosition()
-            particleNode.style.WebkitTransform = `translate(${x}px, ${y}px)`
-        })
-    }
-}
-
 class CanvasStage {
     constructor() {
         this.particles = [];
@@ -117,21 +93,20 @@ class CanvasStage {
         this.stage.height = window.innerHeight * ratio;
         this.ctx.clearRect(0, 0, this.stage.width, this.stage.height);
         this.ctx.scale(ratio, ratio);
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         this.particles.forEach(particle => {
             let [x, y] = particle.getPosition();
             this.ctx.moveTo(x + particle.radius, y);
             this.ctx.beginPath();
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
             this.ctx.arc(x, y, particle.radius, 0, 2 * Math.PI, false);
             this.ctx.fill();
-        }, this)
+        })
     }
 }
 
 
 window.onload = () => {
     setBounds();
-    // window.stage = new DivStage();
     window.stage = new CanvasStage();
     for (let i = 0; i < options.maxBalls; i++)
         stage.addParticle(new Particle(
