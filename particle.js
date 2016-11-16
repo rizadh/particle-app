@@ -102,12 +102,17 @@ class CanvasStage {
             this.ctx.fill();
         })
     }
+
+    animate() {
+        this.render();
+        window.requestAnimationFrame(() => this.animate());
+    }
 }
 
 
 window.onload = () => {
     setBounds();
-    window.stage = new CanvasStage();
+    const stage = new CanvasStage();
     for (let i = 0; i < options.maxBalls; i++)
         stage.addParticle(new Particle(
             [getRandom(bounds[0][0], bounds[0][1]), getRandom(bounds[1][0], bounds[1][1])],
@@ -118,12 +123,7 @@ window.onload = () => {
             bounds
         ))
 
-    let animate = () => {
-        stage.render();
-        window.requestAnimationFrame(animate);
-    }
-
-    window.requestAnimationFrame(animate);
+    stage.animate();
 }
 
 window.onresize = setBounds
