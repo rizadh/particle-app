@@ -1,27 +1,16 @@
-// Options
-const options = {
-    maxBalls: [parseInt(prompt("Number of balls?\n\n" +
-        "Default: 100")), 100],
-    ballSize: [parseInt(prompt("Size of balls? (radius in pixels)\n\n" +
-        "Default: 10")), 10],
-    maxSpeed: [parseFloat(prompt("Maximum initial speed? (px/s)\n\n" +
-        "Default: 100")), 100],
-    maxAccel: [parseFloat(prompt("Maximum acceleration? (px/s\u00B2)\n\n" +
-        "Default: 25")), 25],
-    areaRestrictFactor: [Math.min(Math.max(parseFloat(prompt(
-        "Size of simulation area (from 0 to 1)?\n\n" +
-        "Default: 1"
-    )), 0), 1), 1],
-    gravity: !confirm("Disable gravity?"),
-}
+const options = {};
 
-for (let option in options)
-    if (options[option] instanceof Array)
-        options[option] = options[option][0] || (options[option][0] == 0) ? options[option][0] : options[option][1];
+// Prompt for options
+options.maxBalls = promptOption("Number of balls?", parseInt, 100);
+options.ballSize = promptOption("Size of balls?", parseInt, 10);
+options.maxSpeed = promptOption("Maximum initial speed?", parseInt, 100);
+options.maxAccel = promptOption("Maximum acceleration?", parseInt, options.maxSpeed / 4);
+options.areaRestrictFactor = promptOption("Size of simulation area (0 - 1)?", x => Math.min(Math.max(parseFloat(x), 0), 1), 1);
+options.gravity = !confirm("Disable gravity?");
+
+console.log(options);
 
 let bounds = [Infinity, Infinity];
-
-console.log(options)
 
 // Physics functions
 const restitution = () => options.gravity ? getRandom(0.25, 0.75) : 1;
@@ -145,3 +134,8 @@ function setBounds() {
 function getPixelRatio() { return 'devicePixelRatio' in window ? window.devicePixelRatio : 1; }
 
 function getRandom(lowerBound, upperBound) { return lowerBound + Math.random() * (upperBound - lowerBound); }
+
+function promptOption(promptMessage, parserFunction, defaultValue) {
+    const parsedValue = parserFunction(prompt(promptMessage + "\n\nDefault: " + defaultValue));
+    return parsedValue || parsedValue == 0 ? parsedValue : defaultValue;
+}
