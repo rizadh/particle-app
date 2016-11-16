@@ -1,10 +1,12 @@
 const options = {};
 
 // Prompt for options
-options.maxBalls = promptOption("Number of balls?", parseInt, 100);
-options.ballSize = promptOption("Size of balls?", parseInt, 10);
-options.maxSpeed = promptOption("Maximum initial speed?", parseInt, 100);
-options.maxAccel = promptOption("Maximum acceleration?", parseInt, options.maxSpeed / 4);
+options.maxBalls = promptOption("Number of balls?", x => Math.max(parseInt(x), 0), 100);
+options.ballSize = promptOption("Size of balls?", x => Math.max(parseInt(x), 0), 10);
+options.maxSpeed = promptOption("Maximum initial speed?", parseFloat, 100);
+options.minSpeed = promptOption("Minimum initial speed?", x => Math.max(parseFloat(x), 0), options.maxSpeed / 2);
+options.maxAccel = promptOption("Maximum acceleration?", parseFloat, options.maxSpeed / 4);
+options.minAccel = promptOption("Minimum acceleration?", x => Math.max(parseFloat(x), 0), options.minSpeed / 4);
 options.areaRestrictFactor = promptOption("Size of simulation area (0 - 1)?", x => Math.min(Math.max(parseFloat(x), 0), 1), 1);
 options.gravity = !confirm("Disable gravity?");
 options.bounds = [[Infinity, Infinity], [Infinity, Infinity]]
@@ -15,8 +17,16 @@ console.log(options);
 const generate = {
     restitution: () => options.gravity ? getRandom(0.25, 0.75) : 1,
     position: () => [getRandom(options.bounds[0][0], options.bounds[0][1]), getRandom(options.bounds[1][0], options.bounds[1][1])],
-    speed: () => [getRandom(-options.maxSpeed, options.maxSpeed), getRandom(-options.maxSpeed, options.maxSpeed)],
-    acceleration: () => options.gravity ? [0, 98] : [getRandom(-options.maxAccel, options.maxAccel), getRandom(-options.maxAccel, options.maxAccel)]
+    speed: () => {
+        const speed = getRandom(options.minSpeed, options.maxSpeed);
+        const direction = getRandom(0, 2 * Math.PI);
+        return [speed * Math.cos(direction), speed * Math.sin(direction)]
+    },
+    acceleration: () => {
+        const acceleration = getRandom(options.minAccel, options.maxAccel);
+        const direction = getRandom(0, 2 * Math.PI);
+        return options.gravity ? [0, 98] : [acceleration * Math.cos(direction), acceleration * Math.sin(direction)]
+    }
 }
 
 class Particle {
