@@ -11,8 +11,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "compile": "babel particle.js --presets=es2015 | uglifyjs > particle.min.js",
-    "serve": "http-server",
+    "compile": "babel particle.js --presets=es2015 --out-file particle.min.js --source-maps",
+    "serve": "http-server -p 80",
     "start": "npm run compile && npm run serve"
   },
   "author": "",
