@@ -7,58 +7,70 @@ options.maxSpeed = promptOption("Maximum initial speed?", parseInt, 100);
 options.maxAccel = promptOption("Maximum acceleration?", parseInt, options.maxSpeed / 4);
 options.areaRestrictFactor = promptOption("Size of simulation area (0 - 1)?", x => Math.min(Math.max(parseFloat(x), 0), 1), 1);
 options.gravity = !confirm("Disable gravity?");
+options.bounds = [[Infinity, Infinity], [Infinity, Infinity]]
 
 console.log(options);
 
-let bounds = [Infinity, Infinity];
-
 // Physics functions
-const restitution = () => options.gravity ? getRandom(0.25, 0.75) : 1;
-const acceleration = () => options.gravity ? [0, 98] : [getRandom(-options.maxAccel, options.maxAccel), getRandom(-options.maxAccel, options.maxAccel)];
+const generate = {
+    restitution: () => options.gravity ? getRandom(0.25, 0.75) : 1,
+    position: () => [getRandom(options.bounds[0][0], options.bounds[0][1]), getRandom(options.bounds[1][0], options.bounds[1][1])],
+    speed: () => [getRandom(-options.maxSpeed, options.maxSpeed), getRandom(-options.maxSpeed, options.maxSpeed)],
+    acceleration: () => options.gravity ? [0, 98] : [getRandom(-options.maxAccel, options.maxAccel), getRandom(-options.maxAccel, options.maxAccel)]
+}
 
 class Particle {
     constructor(position = [0, 0], velocity = [0, 0], acceleration = [0, 0], restitution = 1, radius = 0, bounds = [Infinity, Infinity]) {
-        this.position = position;
-        this.velocity = velocity;
-        this.acceleration = acceleration;
-        this.restitution = restitution;
-        this.radius = radius;
-        this.bounds = bounds;
-        this.lastUpdate = new Date().getTime();
+        this._position = position;
+        this._velocity = velocity;
+        this._acceleration = acceleration;
+        this._restitution = restitution;
+        this._radius = radius;
+        this._bounds = bounds;
+        this._lastUpdate = new Date().getTime();
     }
 
     checkBounds() {
         for (let axis = 0; axis < 2; axis++)
             for (let extreme = 0; extreme < 2; extreme++)
-                if ((extreme ? -this.position[axis] : this.position[axis]) - this.radius < (extreme ? -this.bounds[axis][extreme] : this.bounds[axis][extreme])) {
-                    this.position[axis] = this.bounds[axis][extreme] + (extreme ? -this.radius : this.radius);
-                    this.velocity[axis] = -this.velocity[axis] * this.restitution;
-                    this.acceleration = acceleration()
+                if ((extreme ? -this._position[axis] : this._position[axis]) - this._radius < (extreme ? -this._bounds[axis][extreme] : this._bounds[axis][extreme])) {
+                    this._position[axis] = this._bounds[axis][extreme] + (extreme ? -this._radius : this._radius);
+                    this._velocity[axis] = -this._velocity[axis] * this._restitution;
+                    this._acceleration = generate.acceleration()
                 }
     }
 
-    getPosition() {
+    get position() {
         const currTime = new Date().getTime();
-        let dt = (currTime - this.lastUpdate) / 1000;
-        if (dt > 0.5)
-            dt = 1 / 30;
-        this.lastUpdate = currTime;
-        this.position = [
-            this.position[0] + dt * this.velocity[0],
-            this.position[1] + dt * this.velocity[1]
+        const targetFps = 30;
+        let dt = (currTime - this._lastUpdate) / 1000;
+        if (dt > 1 / targetFps)
+            dt = 1 / targetFps;
+        this._lastUpdate = currTime;
+        this._position = [
+            this._position[0] + dt * this._velocity[0],
+            this._position[1] + dt * this._velocity[1]
         ];
-        this.velocity = [
-            this.velocity[0] + dt * this.acceleration[0],
-            this.velocity[1] + dt * this.acceleration[1]
+        this._velocity = [
+            this._velocity[0] + dt * this._acceleration[0],
+            this._velocity[1] + dt * this._acceleration[1]
         ];
 
         this.checkBounds()
 
-        return this.position;
+        return this._position;
     }
 
-    setBounds(x, y) {
-        this.bounds = [x, y];
+    set position(position) {
+        this._position = position;
+    }
+
+    get radius() {
+        return this._radius;
+    }
+
+    set stageBounds(bounds) {
+        this._bounds = bounds;
     }
 }
 
@@ -84,7 +96,8 @@ class CanvasStage {
         this.ctx.scale(ratio, ratio);
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         this.particles.forEach(particle => {
-            let [x, y] = particle.getPosition();
+            particle.stageBounds = options.bounds;
+            let [x, y] = particle.position;
             this.ctx.moveTo(x + particle.radius, y);
             this.ctx.beginPath();
             this.ctx.arc(x, y, particle.radius, 0, 2 * Math.PI, false);
@@ -104,12 +117,12 @@ window.onload = () => {
     const stage = new CanvasStage();
     for (let i = 0; i < options.maxBalls; i++)
         stage.addParticle(new Particle(
-            [getRandom(bounds[0][0], bounds[0][1]), getRandom(bounds[1][0], bounds[1][1])],
-            [getRandom(-options.maxSpeed, options.maxSpeed), getRandom(-options.maxSpeed, options.maxSpeed)],
-            acceleration(),
-            restitution(),
+            generate.position(),
+            generate.speed(),
+            generate.acceleration(),
+            generate.restitution(),
             options.ballSize,
-            bounds
+            options.bounds
         ))
 
     stage.animate();
@@ -127,8 +140,10 @@ function setBounds() {
         height * (1 - options.areaRestrictFactor) / 2
     ];
 
-    bounds[0] = [xMargin, width - xMargin];
-    bounds[1] = [yMargin, height - yMargin];
+    options.bounds = [
+        [xMargin, width - xMargin],
+        [yMargin, height - yMargin]
+    ]
 }
 
 function getPixelRatio() { return 'devicePixelRatio' in window ? window.devicePixelRatio : 1; }
