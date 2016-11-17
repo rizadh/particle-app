@@ -16,16 +16,27 @@ console.log(options);
 // Physics functions
 const generate = {
     restitution: () => options.gravity ? getRandom(0.25, 0.75) : 1,
-    position: () => [getRandom(options.bounds[0][0], options.bounds[0][1]), getRandom(options.bounds[1][0], options.bounds[1][1])],
+    position: () => [
+        getRandom(options.bounds[0][0], options.bounds[0][1]),
+        getRandom(options.bounds[1][0], options.bounds[1][1])
+    ],
     speed: () => {
         const speed = getRandom(options.minSpeed, options.maxSpeed);
         const direction = getRandom(0, 2 * Math.PI);
-        return [speed * Math.cos(direction), speed * Math.sin(direction)]
+
+        return [
+            speed * Math.cos(direction),
+            speed * Math.sin(direction)
+        ]
     },
     acceleration: () => {
         const acceleration = getRandom(options.minAccel, options.maxAccel);
         const direction = getRandom(0, 2 * Math.PI);
-        return options.gravity ? [0, 98] : [acceleration * Math.cos(direction), acceleration * Math.sin(direction)]
+
+        return [
+            options.gravity ? 0 : acceleration * Math.cos(direction),
+            options.gravity ? 98 : acceleration * Math.sin(direction)
+        ]
     }
 }
 
