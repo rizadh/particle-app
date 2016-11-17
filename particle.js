@@ -57,21 +57,29 @@ class Particle {
     }
 
     checkBounds() {
-        for (let axis = 0; axis < 2; axis++)
-            for (let extreme = 0; extreme < 2; extreme++)
-                if ((extreme ? -this._position[axis] : this._position[axis]) - this._radius < (extreme ? -this._bounds[axis][extreme] : this._bounds[axis][extreme])) {
-                    this._position[axis] = this._bounds[axis][extreme] + (extreme ? -this._radius : this._radius);
-                    this._velocity[axis] = -this._velocity[axis] * this._restitution;
-                    this._acceleration = generate.acceleration()
-                }
+        for (let axis = 0; axis < 2; axis++) {
+            const minPos = this._position[axis] - this._radius;
+            const maxPos = this._position[axis] + this._radius;
+            const minTrespass = this._bounds[axis][0] - minPos;
+            const maxTrespass = maxPos - this._bounds[axis][1];
+            if (minTrespass > 0)
+                this._position[axis] = this._bounds[axis][0] +
+                    this._radius + minTrespass;
+            else if (maxTrespass > 0)
+                this._position[axis] = this._bounds[axis][1] -
+                    this._radius - maxTrespass;
+            else
+                continue;
+
+            this._velocity[axis] = -this._velocity[axis] * this._restitution;
+            this._acceleration = generate.acceleration()
+        }
     }
 
     get position() {
         const currTime = new Date().getTime();
         const targetFps = 30;
         let dt = (currTime - this._lastUpdate) / 1000;
-        if (dt > 1 / targetFps)
-            dt = 1 / targetFps;
         this._lastUpdate = currTime;
         this._position = [
             this._position[0] + dt * this._velocity[0],
