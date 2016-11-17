@@ -1,14 +1,20 @@
 const options = {};
 
 // Prompt for options
-options.maxBalls = promptOption("Number of balls?", x => Math.max(parseInt(x), 0), 100);
-options.ballSize = promptOption("Size of balls?", x => Math.max(parseInt(x), 0), 10);
+options.maxBalls = promptOption("Number of balls?",
+    x => Math.max(parseInt(x), 1), 100);
+options.maxSize = promptOption("Maximum size of balls?",
+    x => Math.max(parseInt(x), 1), 20);
+options.minSize = promptOption("Minimum size of balls?",
+    x => Math.min(Math.max(parseInt(x), 1), options.maxSize), options.maxSize / 2);
 options.gravity = !confirm("Disable gravity?");
-options.maxSpeed = promptOption("Maximum initial speed?", parseFloat, 100);
+options.maxSpeed = promptOption("Maximum initial speed?",
+    x => Math.max(parseFloat(x), 0), 100);
 options.minSpeed = promptOption("Minimum initial speed?",
     x => Math.min(Math.max(parseFloat(x), 0), options.maxSpeed), options.maxSpeed / 2);
 if (!options.gravity) {
-    options.maxAccel = promptOption("Maximum acceleration?", parseFloat, options.maxSpeed / 4);
+    options.maxAccel = promptOption("Maximum acceleration?",
+        x => Math.max(parseFloat(x), 0), options.maxSpeed / 4);
     options.minAccel = promptOption("Minimum acceleration?",
         x => Math.min(Math.max(parseFloat(x), 0), options.maxAccel), options.minSpeed / 4);
 }
@@ -42,7 +48,8 @@ const generate = {
             options.gravity ? 0 : acceleration * Math.cos(direction),
             options.gravity ? 98 : acceleration * Math.sin(direction)
         ]
-    }
+    },
+    size: () => getRandom(options.minSize, options.maxSize)
 }
 
 class Particle {
@@ -155,7 +162,7 @@ window.onload = () => {
             generate.speed(),
             generate.acceleration(),
             generate.restitution(),
-            options.ballSize,
+            generate.size(),
             options.bounds
         ))
 
