@@ -49,7 +49,34 @@ const generate = {
             options.gravity ? 98 : acceleration * Math.sin(direction)
         ]
     },
-    size: () => getRandom(options.minSize, options.maxSize)
+    size: () => getRandom(options.minSize, options.maxSize),
+    color: () => {
+        const total = 127;
+        let a = Math.round(total * Math.random())
+        let b = Math.round((total - a) * Math.random())
+        let c = total - a - b;
+
+        a += 127
+        b += 127
+        c += 127
+
+        let n = Math.floor(Math.random() * 6)
+
+        switch (n) {
+            case 0:
+                return [a, b, c]
+            case 1:
+                return [a, c, b]
+            case 2:
+                return [b, a, c]
+            case 3:
+                return [b, c, a]
+            case 4:
+                return [c, a, b]
+            case 5:
+                return [c, b, a]
+        }
+    }
 }
 
 class Particle {
@@ -124,6 +151,8 @@ class CanvasStage {
     }
 
     addParticle(particle) {
+        const colorArray = generate.color();
+        particle._stage_color = `rgba(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]}, 0.5)`;
         this.particles.push(particle);
     }
 
@@ -135,9 +164,9 @@ class CanvasStage {
         this.stage.height = window.innerHeight * ratio;
         this.ctx.clearRect(0, 0, this.stage.width, this.stage.height);
         this.ctx.scale(ratio, ratio);
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
         this.particles.forEach(particle => {
             particle.stageBounds = options.bounds;
+            this.ctx.fillStyle = particle._stage_color
             let [x, y] = particle.position;
             this.ctx.moveTo(x + particle.radius, y);
             this.ctx.beginPath();
