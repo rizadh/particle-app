@@ -22,6 +22,7 @@ if (!options.gravity) {
 }
 options.areaRestrictFactor = promptOption("Size of simulation area (0 - 1)?",
     x => Math.min(Math.max(parseFloat(x), 0), 1), 1);
+options.scalePixels = confirm("Scale pixels?");
 options.bounds = [[Infinity, Infinity], [Infinity, Infinity]]
 
 console.log(options);
@@ -155,13 +156,14 @@ class CanvasStage {
     }
 
     render() {
-        let ratio = getPixelRatio();
+        const ratio = getPixelRatio();
         this.stage.style.width = window.innerWidth;
         this.stage.style.height = window.innerHeight;
         this.stage.width = window.innerWidth * ratio;
         this.stage.height = window.innerHeight * ratio;
+        if (options.scalePixels)
+            this.ctx.scale(ratio, ratio);
         this.ctx.clearRect(0, 0, this.stage.width, this.stage.height);
-        this.ctx.scale(ratio, ratio);
         this.particles.forEach(particle => {
             particle.stageBounds = options.bounds;
             this.ctx.fillStyle = particle._stage_color
@@ -203,6 +205,13 @@ function setBounds() {
         window.innerWidth,
         window.innerHeight
     ];
+
+    if (!options.scalePixels) {
+        const ratio = getPixelRatio();
+        width *= ratio;
+        height *= ratio;
+    }
+
     let [xMargin, yMargin] = [
         width * (1 - options.areaRestrictFactor) / 2,
         height * (1 - options.areaRestrictFactor) / 2
