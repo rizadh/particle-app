@@ -3,6 +3,8 @@ const options = {};
 // Prompt for options
 options.maxBalls = promptOption("Number of balls?",
     x => Math.max(parseInt(x), 1), 100);
+options.brightness = promptOption("Ball color brightness? (0 - 255)",
+    x => Math.min(Math.max(parseFloat(x), 0), 255), 4)
 options.maxSize = promptOption("Maximum size of balls?",
     x => Math.max(parseInt(x), 1), 20);
 options.minSize = promptOption("Minimum size of balls?",
@@ -49,32 +51,27 @@ const generate = {
             options.gravity ? 98 : acceleration * Math.sin(direction)
         ]
     },
+
     size: () => getRandom(options.minSize, options.maxSize),
     color: () => {
-        const total = 127;
-        let a = Math.round(total * Math.random())
-        let b = Math.round((total - a) * Math.random())
-        let c = total - a - b;
+        const total = 255;
+        let a = Math.ceil(total * Math.random());
+        let b = Math.ceil((total - a) * Math.random());
+        let c = total - a - b || 1;
 
-        a += 127
-        b += 127
-        c += 127
-
-        let n = Math.floor(Math.random() * 6)
-
-        switch (n) {
+        switch (Math.floor(Math.random() * 6)) {
             case 0:
-                return [a, b, c]
+                return [a, b, c].map(x => Math.round(x * options.brightness))
             case 1:
-                return [a, c, b]
+                return [a, c, b].map(x => Math.round(x * options.brightness))
             case 2:
-                return [b, a, c]
+                return [b, a, c].map(x => Math.round(x * options.brightness))
             case 3:
-                return [b, c, a]
+                return [b, c, a].map(x => Math.round(x * options.brightness))
             case 4:
-                return [c, a, b]
+                return [c, a, b].map(x => Math.round(x * options.brightness))
             case 5:
-                return [c, b, a]
+                return [c, b, a].map(x => Math.round(x * options.brightness))
         }
     }
 }
