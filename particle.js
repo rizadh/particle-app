@@ -106,7 +106,8 @@ class Particle {
                 continue;
 
             this._velocity[axis] = -this._velocity[axis] * this._restitution;
-            this._acceleration = generate.acceleration()
+            this._acceleration = generate.acceleration();
+            this.checkBounds();
         }
     }
 
