@@ -56,24 +56,30 @@ const generate = {
     size: () => getRandom(options.minSize, options.maxSize),
     color: () => {
         const total = 255;
-        let a = Math.ceil(total * Math.random());
-        let b = Math.ceil((total - a) * Math.random());
-        let c = total - a - b || 1;
+        let a = total * Math.random();
+        let b = (total - a) * Math.random();
+        let c = total - a - b;
+
+        let rgbArray = [0, 0, 0];
 
         switch (Math.floor(Math.random() * 6)) {
             case 0:
-                return [a, b, c].map(x => Math.round(x * options.brightness))
+                rgbArray = [a, b, c]
             case 1:
-                return [a, c, b].map(x => Math.round(x * options.brightness))
+                rgbArray = [a, c, b]
             case 2:
-                return [b, a, c].map(x => Math.round(x * options.brightness))
+                rgbArray = [b, a, c]
             case 3:
-                return [b, c, a].map(x => Math.round(x * options.brightness))
+                rgbArray = [b, c, a]
             case 4:
-                return [c, a, b].map(x => Math.round(x * options.brightness))
+                rgbArray = [c, a, b]
             case 5:
-                return [c, b, a].map(x => Math.round(x * options.brightness))
+                rgbArray = [c, b, a]
         }
+
+        return rgbArray.map(x =>
+            Math.round(Math.min(Math.max(x, 1) * options.brightness, 255))
+        );
     }
 }
 
