@@ -4,7 +4,7 @@ const options = {};
 options.maxBalls = promptOption("Number of balls?",
     x => Math.max(parseInt(x), 1), 100);
 options.brightness = promptOption("Ball color brightness? (0 - 255)",
-    x => Math.min(Math.max(parseFloat(x), 0), 255), 4)
+    x => Math.min(Math.max(parseFloat(x), 0), 255), 4);
 options.maxSize = promptOption("Maximum size of balls?",
     x => Math.max(parseInt(x), 1), 20);
 options.minSize = promptOption("Minimum size of balls?",
@@ -28,7 +28,7 @@ if (!options.gravity) {
 options.areaRestrictFactor = promptOption("Size of simulation area (0 - 1)?",
     x => Math.min(Math.max(parseFloat(x), 0), 1), 1);
 options.scalePixels = confirm("Scale pixels?");
-options.bounds = [[Infinity, Infinity], [Infinity, Infinity]]
+options.bounds = [[Infinity, Infinity], [Infinity, Infinity]];
 
 console.log(options);
 
@@ -46,7 +46,7 @@ const generate = {
         return [
             speed * Math.cos(direction),
             speed * Math.sin(direction)
-        ]
+        ];
     },
     acceleration: () => {
         const acceleration = getRandom(options.minAccel, options.maxAccel);
@@ -55,7 +55,7 @@ const generate = {
         return [
             options.gravity ? 0 : acceleration * Math.cos(direction),
             options.gravity ? 98 : acceleration * Math.sin(direction)
-        ]
+        ];
     },
 
     size: () => getRandom(options.minSize, options.maxSize),
@@ -69,25 +69,32 @@ const generate = {
 
         switch (Math.floor(Math.random() * 6)) {
             case 0:
-                rgbArray = [a, b, c]
+                rgbArray = [a, b, c];
+                break;
             case 1:
-                rgbArray = [a, c, b]
+                rgbArray = [a, c, b];
+                break;
             case 2:
-                rgbArray = [b, a, c]
+                rgbArray = [b, a, c];
+                break;
             case 3:
-                rgbArray = [b, c, a]
+                rgbArray = [b, c, a];
+                break;
             case 4:
-                rgbArray = [c, a, b]
+                rgbArray = [c, a, b];
+                break;
             case 5:
-                rgbArray = [c, b, a]
+                rgbArray = [c, b, a];
+                break;
         }
 
         return rgbArray.map(x =>
             Math.round(Math.min(Math.max(x, 1) * options.brightness, 255))
         );
     }
-}
+};
 
+/* jshint -W078 */
 class Particle {
     constructor(position = [0, 0], velocity = [0, 0], acceleration = [0, 0],
         restitution = 1, radius = 0, bounds = [Infinity, Infinity]) {
@@ -135,7 +142,7 @@ class Particle {
             this._velocity[1] + dt * this._acceleration[1]
         ];
 
-        this.checkBounds()
+        this.checkBounds();
 
         return this._position;
     }
@@ -152,6 +159,7 @@ class Particle {
         this._bounds = bounds;
     }
 }
+/* jshint +W078 */
 
 class CanvasStage {
     constructor() {
@@ -179,13 +187,13 @@ class CanvasStage {
         this.ctx.clearRect(0, 0, this.stage.width, this.stage.height);
         this.particles.forEach(particle => {
             particle.stageBounds = options.bounds;
-            this.ctx.fillStyle = particle._stage_color
+            this.ctx.fillStyle = particle._stage_color;
             let [x, y] = particle.position;
             this.ctx.moveTo(x + particle.radius, y);
             this.ctx.beginPath();
             this.ctx.arc(x, y, particle.radius, 0, 2 * Math.PI, false);
             this.ctx.fill();
-        })
+        });
     }
 
     animate() {
@@ -206,12 +214,12 @@ window.onload = () => {
             generate.restitution(),
             generate.size(),
             options.bounds
-        ))
+        ));
 
     stage.animate();
-}
+};
 
-window.onresize = setBounds
+window.onresize = setBounds;
 
 function setBounds() {
     let [width, height] = [
@@ -233,7 +241,7 @@ function setBounds() {
     options.bounds = [
         [xMargin, width - xMargin],
         [yMargin, height - yMargin]
-    ]
+    ];
 }
 
 function getPixelRatio() {
@@ -248,5 +256,5 @@ function promptOption(promptMessage, parserFunction, defaultValue) {
     const parsedValue = parserFunction(
         prompt(promptMessage + "\n\nDefault: " + defaultValue)
     );
-    return parsedValue || parsedValue == 0 ? parsedValue : defaultValue;
+    return parsedValue || parsedValue === 0 ? parsedValue : defaultValue;
 }

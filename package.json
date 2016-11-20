@@ -7,10 +7,12 @@
     "babel-cli": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
     "http-server": "^0.9.0",
+    "jshint": "^2.9.4",
     "uglify-js": "^2.7.4"
   },
   "devDependencies": {},
   "scripts": {
+    "precompile": "jshint particle.js --verbose",
     "compile": "babel particle.js --presets=es2015 --out-file particle.min.js --source-maps",
     "serve": "http-server -p 80",
     "start": "npm run compile && npm run serve"
