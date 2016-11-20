@@ -8,17 +8,22 @@ options.brightness = promptOption("Ball color brightness? (0 - 255)",
 options.maxSize = promptOption("Maximum size of balls?",
     x => Math.max(parseInt(x), 1), 20);
 options.minSize = promptOption("Minimum size of balls?",
-    x => Math.min(Math.max(parseInt(x), 1), options.maxSize), options.maxSize / 2);
+    x => Math.min(Math.max(parseInt(x), 1), options.maxSize),
+    options.maxSize / 2
+);
 options.gravity = !confirm("Disable gravity?");
 options.maxSpeed = promptOption("Maximum initial speed?",
     x => Math.max(parseFloat(x), 0), 100);
 options.minSpeed = promptOption("Minimum initial speed?",
-    x => Math.min(Math.max(parseFloat(x), 0), options.maxSpeed), options.maxSpeed / 2);
+    x => Math.min(Math.max(parseFloat(x), 0), options.maxSpeed),
+    options.maxSpeed / 2
+);
 if (!options.gravity) {
     options.maxAccel = promptOption("Maximum acceleration?",
         x => Math.max(parseFloat(x), 0), options.maxSpeed / 4);
     options.minAccel = promptOption("Minimum acceleration?",
-        x => Math.min(Math.max(parseFloat(x), 0), options.maxAccel), options.minSpeed / 4);
+        x => Math.min(Math.max(parseFloat(x), 0), options.maxAccel),
+        options.minSpeed / 4);
 }
 options.areaRestrictFactor = promptOption("Size of simulation area (0 - 1)?",
     x => Math.min(Math.max(parseFloat(x), 0), 1), 1);
@@ -84,7 +89,8 @@ const generate = {
 }
 
 class Particle {
-    constructor(position = [0, 0], velocity = [0, 0], acceleration = [0, 0], restitution = 1, radius = 0, bounds = [Infinity, Infinity]) {
+    constructor(position = [0, 0], velocity = [0, 0], acceleration = [0, 0],
+        restitution = 1, radius = 0, bounds = [Infinity, Infinity]) {
         this._position = position;
         this._velocity = velocity;
         this._acceleration = acceleration;
@@ -157,7 +163,8 @@ class CanvasStage {
 
     addParticle(particle) {
         const colorArray = generate.color();
-        particle._stage_color = `rgba(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]}, 0.5)`;
+        particle._stage_color =
+            `rgba(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]}, 0.5)`;
         this.particles.push(particle);
     }
 
@@ -229,11 +236,17 @@ function setBounds() {
     ]
 }
 
-function getPixelRatio() { return 'devicePixelRatio' in window ? window.devicePixelRatio : 1; }
+function getPixelRatio() {
+    return 'devicePixelRatio' in window ? window.devicePixelRatio : 1;
+}
 
-function getRandom(lowerBound, upperBound) { return lowerBound + Math.random() * (upperBound - lowerBound); }
+function getRandom(lowerBound, upperBound) {
+    return lowerBound + Math.random() * (upperBound - lowerBound);
+}
 
 function promptOption(promptMessage, parserFunction, defaultValue) {
-    const parsedValue = parserFunction(prompt(promptMessage + "\n\nDefault: " + defaultValue));
+    const parsedValue = parserFunction(
+        prompt(promptMessage + "\n\nDefault: " + defaultValue)
+    );
     return parsedValue || parsedValue == 0 ? parsedValue : defaultValue;
 }
