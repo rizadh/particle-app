@@ -3,15 +3,23 @@ const options = {};
 // Prompt for options
 options.maxBalls = promptOption("Number of balls?",
     x => Math.max(parseInt(x), 1), 100);
-options.brightness = promptOption("Ball color brightness? (0 - 255)",
-    x => Math.min(Math.max(parseFloat(x), 0), 255), 4);
+options.coreHue = promptOption("Average hue? (0 - 360)",
+    x => Math.min(Math.max(parseInt(x), 0), 360), 0);
+options.hueVariance = promptOption("Hue variance? (0 - 360)",
+    x => Math.min(Math.max(parseInt(x), 0), 360), 360);
+options.saturation = promptOption("Colour saturation? (0 - 100)",
+    x => Math.min(Math.max(parseInt(x), 0), 100), 80);
+options.lightness = promptOption("Colour lightness? (0 - 100)",
+    x => Math.min(Math.max(parseInt(x), 0), 100), 60);
+options.ballOpacity = promptOption("Ball opacity? (0 - 1)",
+    x => Math.min(Math.max(parseFloat(x), 0), 1), 0.8);
+options.gravity = !confirm("Disable gravity?");
 options.maxSize = promptOption("Maximum size of balls?",
     x => Math.max(parseInt(x), 1), 20);
 options.minSize = promptOption("Minimum size of balls?",
     x => Math.min(Math.max(parseInt(x), 1), options.maxSize),
     options.maxSize / 2
 );
-options.gravity = !confirm("Disable gravity?");
 options.maxSpeed = promptOption("Maximum initial speed?",
     x => Math.max(parseFloat(x), 0), 100);
 options.minSpeed = promptOption("Minimum initial speed?",
@@ -57,41 +65,10 @@ const generate = {
             options.gravity ? 98 : acceleration * Math.sin(direction)
         ];
     },
-
     size: () => getRandom(options.minSize, options.maxSize),
-    color: () => {
-        const total = 255;
-        let a = total * Math.random();
-        let b = (total - a) * Math.random();
-        let c = total - a - b;
-
-        let rgbArray = [0, 0, 0];
-
-        switch (Math.floor(Math.random() * 6)) {
-            case 0:
-                rgbArray = [a, b, c];
-                break;
-            case 1:
-                rgbArray = [a, c, b];
-                break;
-            case 2:
-                rgbArray = [b, a, c];
-                break;
-            case 3:
-                rgbArray = [b, c, a];
-                break;
-            case 4:
-                rgbArray = [c, a, b];
-                break;
-            case 5:
-                rgbArray = [c, b, a];
-                break;
-        }
-
-        return rgbArray.map(x =>
-            Math.round(Math.min(Math.max(x, 1) * options.brightness, 255))
-        );
-    }
+    hue: () => Math.round(
+        options.coreHue + options.hueVariance * (Math.random() - 0.5)
+    )
 };
 
 /* jshint -W078 */
@@ -170,9 +147,8 @@ class CanvasStage {
     }
 
     addParticle(particle) {
-        const colorArray = generate.color();
         particle._stage_color =
-            `rgba(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]}, 0.5)`;
+            `hsla(${generate.hue()}, ${options.saturation}%, ${options.lightness}%, ${options.ballOpacity})`;
         this.particles.push(particle);
     }
 
