@@ -13,7 +13,7 @@
   "devDependencies": {},
   "scripts": {
     "precompile": "jshint particle.js --verbose",
-    "compile": "babel particle.js --presets=es2015 --out-file particle.min.js --source-maps",
+    "compile": "babel particle.js | uglifyjs -cm toplevel > particle.min.js",
     "serve": "http-server -p 80",
     "start": "npm run compile && npm run serve"
   },
