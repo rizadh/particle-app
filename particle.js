@@ -107,7 +107,6 @@ class Particle {
 
     get position() {
         const currTime = new Date().getTime();
-        const targetFps = 30;
         let dt = (currTime - this._lastUpdate) / 1000;
         this._lastUpdate = currTime;
         this._position = [
