@@ -14,6 +14,7 @@
   },
   "devDependencies": {},
   "scripts": {
+    "clean": "rm *.min.js index.html",
     "precompile": "jshint particle.js --verbose",
     "compile": "babel particle.js | uglifyjs -cm toplevel > particle.min.js && pug index.pug",
     "serve": "http-server -p 80",
